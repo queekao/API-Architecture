@@ -1,0 +1,6 @@
+{
+    "watch": ["src", ".env", ".restart"],
+    "ext": "ts",
+    "ignore": ["src/**/*.spec.ts"],
+    "exec": "npm run build && node ./dist/main.js || (sleep 10; touch .restart)"
+  }

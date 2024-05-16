@@ -1,0 +1,24 @@
+FROM node:20
+
+RUN useradd --user-group --create-home --shell /bin/false app
+ENV HOME=/home/app/backend
+RUN mkdir -p $HOME
+WORKDIR $HOME
+COPY . .
+
+RUN mkdir -p $HOME/dist
+RUN mkdir -p $HOME/.npm
+RUN touch $HOME/.restart
+
+RUN chown -R app:app $HOME
+
+RUN npm install -g npm@latest
+RUN npm install -g typescript dotenv-cli nodemon
+RUN npm install
+RUN npx prisma generate
+
+RUN chown -R app:app $HOME/dist
+RUN chown -R app:app $HOME/.npm
+RUN chown app:app $HOME/.restart
+
+USER app

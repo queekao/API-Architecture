@@ -1,0 +1,116 @@
+version: '3.8'
+
+services:
+  microservice-instant-messaging:
+    restart: always
+    container_name: ${CONTAINER_NAME}
+    image: microservice-instant-messaging-dev:0.1
+    build: .
+    volumes:
+      - .:/home/app/backend
+      - /home/app/backend/dist
+      - /home/app/backend/node_modules
+      - /home/app/backend/.vscode
+      - /home/app/backend/.cache
+      - /home/app/backend/.npm
+    entrypoint: /home/app/backend/docker-entrypoint.sh
+    ports:
+      - '${CONTAINER_EXPORT_HTTP}:3000'
+      - '${CONTAINER_EXPORT_WEBSOCKET}:3001'
+    networks:
+      - microservice-instant-messaging_internal
+      - microservice-instant-messaging
+    depends_on:
+      - microservice-instant-messaging-db
+    env_file:
+      - .env
+  microservice-instant-messaging-db:
+    restart: always
+    container_name: ${CONTAINER_NAME}-db
+    image: mongo:7
+    hostname: ${CONTAINER_NAME}-db
+    volumes:
+      - microservice-instant-messaging-db:/data/db
+    command: mongod --replSet ${CONTAINER_NAME}-mongo-set
+    networks:
+      - microservice-instant-messaging_internal
+    env_file:
+      - .env
+
+  microservice-instant-messaging-db-replica:
+    restart: always
+    container_name: ${CONTAINER_NAME}-db-replica
+    image: mongo:7
+    hostname: ${CONTAINER_NAME}-db-replica
+    volumes:
+      - microservice-instant-messaging-db-replica:/data/db
+    command: mongod --replSet ${CONTAINER_NAME}-mongo-set
+    networks:
+      - microservice-instant-messaging_internal
+    env_file:
+      - .env
+
+  microservice-instant-messaging-db-mongo-init:
+    restart: 'no' # this container will exit after executing the command
+    container_name: ${CONTAINER_NAME}-mongo-init
+    image: mongo:7
+    depends_on:
+      - microservice-instant-messaging-db
+      - microservice-instant-messaging-db-replica
+    command: >
+      mongosh --host ${CONTAINER_NAME}-db:27017 --eval
+      '
+      config = {
+      "_id" : "${CONTAINER_NAME}-mongo-set",
+      "members" : [
+        {
+          "_id" : 0,
+          "host" : "${CONTAINER_NAME}-db:27017"
+        },
+        {
+          "_id" : 1,
+          "host" : "${CONTAINER_NAME}-db-replica:27017"
+        }
+      ]
+      };
+      rs.initiate(config);
+      '
+    networks:
+      - microservice-instant-messaging_internal
+    env_file:
+      - .env
+
+    # micro-service-messenger-mongo-express:
+    #   container_name: ${CONTAINER_NAME}-mongo-express
+    #   image: mongo-express:latest
+    #   ports:
+    #     - '${CONTAINER_EXPORT_DB}:8081'
+    #   environment:
+    #     - ME_CONFIG_MONGODB_SERVER=${CONTAINER_NAME}-db
+    #     - ME_CONFIG_BASICAUTH_USERNAME=mongodb
+    #     - ME_CONFIG_BASICAUTH_PASSWORD=mongodb
+    #   depends_on:
+    #     - micro-service-messenger-db
+    #     - micro-service-messenger-db-replica
+    #     - micro-service-messenger-mongo-init
+    #   networks:
+    #     - micro-service-messenger_internal
+    #   env_file:
+    #     - .env
+
+volumes:
+  microservice-instant-messaging-db:
+    external: false
+    name: ${CONTAINER_NAME}-db
+  microservice-instant-messaging-db-replica:
+    external: false
+    name: ${CONTAINER_NAME}-db-replica
+networks:
+  microservice-instant-messaging:
+    name: ${CONTAINER_NAME}
+    driver: bridge
+  microservice-instant-messaging_internal:
+    name: ${CONTAINER_NAME}_internal
+    driver: bridge
+    # - ./db_dump/mongo:/dumps
+    # - template-microservice-nestjs-project-db:/var/lib/postgresql/data
