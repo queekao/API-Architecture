@@ -1,0 +1,3 @@
+[submodule "resources/react"]
+	path = resources/react
+	url = git@github.com:imagtw/gucci-th-visions-frontend.git

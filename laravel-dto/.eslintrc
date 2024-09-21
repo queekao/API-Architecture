@@ -1,0 +1,82 @@
+{
+    "env": {
+        "browser": true,
+        "es2021": true
+    },
+    "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/eslint-recommended",
+        "plugin:@typescript-eslint/recommended",
+        "plugin:react/recommended",
+        "plugin:react-hooks/recommended",
+        "prettier",
+        "plugin:prettier/recommended"
+    ],
+    "ignorePatterns": ["dist", ".eslintrc.cjs"],
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "ecmaFeatures": {
+          "jsx": true
+        },
+        "ecmaVersion": "latest",
+        "sourceType": "module",
+        "project": "./tsconfig.json"
+    },
+    "plugins": [
+        "react",
+        "react-hooks",
+        "@typescript-eslint",
+        "tailwindcss",
+        "prettier"
+    ],
+    "rules": {
+        // indent
+        "indent": ["error", 2, { "SwitchCase": 1 }],
+        "react/jsx-indent": ["error", 2],
+        "react/jsx-indent-props": ["error", 2],
+        "key-spacing": "off",
+        // object
+        "object-shorthand": "off",
+        "no-param-reassign": "off",
+        // statement style
+        "brace-style": ["error", "stroustrup", { "allowSingleLine": true }],
+        "no-restricted-syntax": ["error", "ForInStatement", "LabeledStatement", "WithStatement"],
+        "no-lonely-if": "off",
+        // naming
+        "no-underscore-dangle": ["error", { "allow": ["_id"] }],
+        "no-shadow": "off",
+        "@typescript-eslint/no-shadow": "error",
+        // line
+        "max-len": ["error", {
+            "code": 500
+        }],
+        "import/prefer-default-export": "off",
+        // function
+        "no-inner-declarations": "off",
+        "consistent-return": ["off"],
+        // jsx
+        "react/react-in-jsx-scope": "off",
+        "jsx-a11y/no-noninteractive-element-interactions": "off",   // disable 無障礙設計
+        "react/jsx-filename-extension": ["error", { 
+            "extensions": [".tsx", ".jsx"] 
+        }],
+        "react/require-default-props": "off",       // disable force export default
+        "no-use-before-define": ["error", {
+            "functions": false,
+            "classes": true,
+            "variables": false,
+            "allowNamedExports": false
+        }],
+        // typescript
+        "@typescript-eslint/no-namespace": "off",
+        "@typescript-eslint/no-unused-vars": ["error", {
+            "varsIgnorePattern": "^_",
+            "argsIgnorePattern": "^_",
+            "destructuredArrayIgnorePattern": "^_"
+        }],
+        // prettier
+        "prettier/prettier": "warn",
+        "no-unused-vars": "off",
+        "@typescript-eslint/type-annotation-spacing": ["error"]
+    }
+}
