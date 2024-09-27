@@ -1,0 +1,18 @@
+[
+  {
+    "name": "admin",
+    "telp_number": "09123456789",
+    "email": "admin1234@gmail.com",
+    "password": "admin1234",
+    "role": "admin",
+    "is_verified": true
+  },
+  {
+    "name": "quee",
+    "telp_number": "0987887778",
+    "email": "quee@gmail.com",
+    "password": "user1234",
+    "role": "user",
+    "is_verified": true
+  }
+]
